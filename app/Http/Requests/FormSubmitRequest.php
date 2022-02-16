@@ -27,7 +27,6 @@ class FormSubmitRequest extends FormRequest
     {
         return [
             "title" => "required|string",
-            // "user_id" => 'required|exists:users,id',
             "questions" => "required|array",
             "questions.*.title" => "required",
             "questions.*.type" => "required"

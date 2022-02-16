@@ -24,12 +24,11 @@ class Form
 
     function update($form = null, $data)
     {
-
-        $form->update($data);
-
         if($form->check_answer) {
            return abort(400,"the form have already answers,you cannot update");
         }
+        $form->update($data);
+        
         $form->questions()->delete();
 
         $form->questions()->createMany($data["questions"]);
