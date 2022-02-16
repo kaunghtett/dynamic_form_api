@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\VersionOne;
 
+use App\Events\FormSubmitEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\FormSubmitRequest;
 use App\Models\DynamicForm;
@@ -24,6 +25,8 @@ class DynamicFormController extends Controller
             DB::beginTransaction();
 
             $form = (new Form())->submit($request->all());
+
+            event(new FormSubmitEvent($form,auth()->user()));
          
             DB::commit();
 
