@@ -17,7 +17,7 @@ class CreateDynamicFormAnswersTable extends Migration
             $table->id();
             $table->integer('question_id')->unsigned();
             $table->integer('user_id')->unsigned();
-            $table->string('answer');
+            $table->string('answer')->nullable();
             $table->json('option_answers')->nullable();
             $table->timestamps();
         });

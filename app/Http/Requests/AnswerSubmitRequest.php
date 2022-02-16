@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\ApiResponser;
+use App\Rules\ExistQuestion;
 use Illuminate\Foundation\Http\FormRequest;
 
-class FormSubmitRequest extends FormRequest
+class AnswerSubmitRequest extends FormRequest
 {
-    use ApiResponser;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -26,11 +25,9 @@ class FormSubmitRequest extends FormRequest
     public function rules()
     {
         return [
-            "title" => "required|string",
-            // "user_id" => 'required|exists:users,id',
-            "questions" => "required|array",
-            "questions.*.title" => "required",
-            "questions.*.type" => "required"
+            'answers' => 'required|array',
+            'form_id' => 'required',
+            'answers.*.question_id' => ['required', new ExistQuestion]
         ];
     }
 }

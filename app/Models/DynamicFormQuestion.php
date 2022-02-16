@@ -23,4 +23,12 @@ class DynamicFormQuestion extends Model
         "is_required",
         "options"
     ];
+
+    public function form() {
+        return $this->hasOne(DynamicForm::class,'form_id');
+    }
+
+    public function answers() {
+        return $this->hasMany(DynamicFormAnswer::class,'id');
+    }
 }

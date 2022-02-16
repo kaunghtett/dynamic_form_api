@@ -1,33 +1,54 @@
 <?php
 
 namespace App\Services\DynamicForm;
+
 use App\Models\DynamicFormQuestion;
 use App\Models\DynamicForm;
+use App\Models\DynamicFormAnswer;
+use App\Traits\ApiResponser;
 
-class Form {
+class Form
+{
+    use ApiResponser;
+    function submit($data)
+    {
 
-    function submit($data) {
         $data["user_id"] = auth()->user()->id;
+
         $form = DynamicForm::create($data);
 
-        foreach($data["questions"] as $question) {
-            $this->storeQuestion($question,$form->id);
-        }
+        $form->questions()->createMany($data["questions"]);
 
         return $form;
     }
-    
 
-    protected static function storeQuestion($question,$formId) {
-       
-        $data  =  DynamicFormQuestion::create([
-            "form_id" => $formId,
-            "title" => $question->title ?? "",
-            "type" => $question->type ?? "",
-            "is_required" => (boolean) $question["is_required"],
-            "options" => $question["options"]
-        ]);
+    function update($form = null, $data)
+    {
 
-        $data->save();
+        $form->update($data);
+
+        if($form->check_answer) {
+           return abort(400,"the form have already answers,you cannot update");
+        }
+        $form->questions()->delete();
+
+        $form->questions()->createMany($data["questions"]);
+
+        return $form;
+    }
+
+    function answerSubmit($data) {
+
+        foreach($data["answers"] as $answer) {
+
+            DynamicFormAnswer::create([
+                "user_id" => auth()->user()->id,
+                "question_id" => $answer["question_id"],
+                "answer" => $answer["answer"] ?? "",
+                "option_answers" => $answer["option_answers"] ?? []
+            ]);
+        }
+
+        return true;
     }
 }

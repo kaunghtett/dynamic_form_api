@@ -10,7 +10,7 @@ class DynamicForm extends Model
     use HasFactory;
 
     protected $table = "dynamic_forms";
-    protected $with = ['questions']; //N+1 solved
+    protected $with = ['questions','questions.answers']; //N+1 solved
 
     protected $fillable = [
         "user_id",
@@ -21,14 +21,25 @@ class DynamicForm extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', "active");
+        return $query->where('status', 'active');
     }
 
     public function scopeInactive($query) {
-        return $query->where('status', "inactive");
+        return $query->where('status', 'inactive');
     }
 
     public function questions() {
-        return $this->hasMany(DynamicFormQuestion::class,'id');
+        return $this->hasMany(DynamicFormQuestion::class,'form_id');
     }
+
+    public function getCheckAnswerAttribute() {
+        
+        foreach($this->questions as $question) {
+            if($question->answers->count() > 0) {
+                return true;
+            }
+        }
+
+        return false;
+    } 
 }
